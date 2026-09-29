@@ -73,3 +73,33 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# AI tooling
+/.agents/
+/.serena/
+/.impeccable/
+/AGENTS.md
+/skills-lock.json
+/Codex Master Prompt – ForestLog Mobile MVP.md
+/docs/agents/
+/scripts/audit-impeccable-sidecar.mjs
+/.claude/
+/CLAUDE.md
+/GEMINI.md
+/.mcp.json
+/.cursor/
+/.cursorrules
+/.windsurf/
+/.codex/
+/.gemini/
+/.github/copilot-instructions.md
+
+# Agent-facing docs: README.md is the only doc shipped
+/*.md
+!/README.md
+/docs/
+/pen.dev/
+
+# Generated local artifacts
+/.history/
+/artifacts/

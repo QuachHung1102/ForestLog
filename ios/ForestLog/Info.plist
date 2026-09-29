@@ -34,8 +34,12 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>ForestLog dùng camera để lưu ảnh ghi nhận hiện trường.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>ForestLog dùng vị trí để lưu tọa độ số cho ghi nhận hiện trường.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>ForestLog cho phép chọn ảnh hiện trường từ thư viện.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

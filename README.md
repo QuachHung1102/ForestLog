@@ -1,97 +1,75 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# ForestLog
 
-# Getting Started
+ForestLog là ứng dụng Android offline-first để kiểm lâm tạo chuyến tuần tra, ghi sự kiện kèm ảnh và GPS, hoàn thành chuyến đi, xem lịch sử, rồi tạo và chia sẻ PDF ngay trên thiết bị.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Công nghệ
 
-## Step 1: Start Metro
+- React Native 0.87 và TypeScript
+- SQLite qua `@op-engineering/op-sqlite`
+- Camera/thư viện ảnh qua `react-native-image-picker`
+- GPS qua `@react-native-community/geolocation`
+- Bản đồ và vùng tải trước qua `@maplibre/maplibre-react-native` với OpenFreeMap
+- Lưu tệp qua `react-native-file-access`
+- Tạo, mở và chia sẻ PDF bằng native Android module
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+Không có backend, tài khoản hay đồng bộ đám mây. Mạng chỉ cần khi xem hoặc chủ động tải trước nền bản đồ; dữ liệu tuần tra không được tải lên.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Cài đặt và chạy
+
+Yêu cầu Node.js 22.11+, Android Studio/SDK và một thiết bị hoặc emulator Android.
 
 ```sh
-# Using npm
+npm install
 npm start
-
-# OR using Yarn
-yarn start
 ```
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+Trong terminal khác:
 
 ```sh
-# Using npm
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+Các kiểm tra cục bộ:
 
 ```sh
-bundle install
+npx tsc --noEmit
+npm run lint
+npm test -- --runInBand
 ```
 
-Then, and every time you update your native dependencies, run:
+## Dữ liệu cục bộ
 
-```sh
-bundle exec pod install
-```
+- SQLite là nguồn dữ liệu chính cho khu vực, chuyến tuần tra, sự kiện, metadata ảnh và bản nháp.
+- Chỉ một chuyến được phép ở trạng thái đang thực hiện.
+- Bản nháp tạo chuyến, hoàn thành chuyến và ghi sự kiện được khôi phục sau khi ứng dụng bị đóng.
+- Ảnh được chuyển vào thư mục do ứng dụng quản lý; SQLite chỉ lưu URI ổn định và thứ tự ảnh.
+- Khi xóa sự kiện, metadata và tệp ảnh không còn được tham chiếu sẽ được dọn an toàn.
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## GPS và quyền thiết bị
 
-```sh
-# Using npm
-npm run ios
+GPS được lấy tự động khi mở form ghi nhận. Người dùng có thể thử lại, nhưng GPS thất bại hoặc bị từ chối quyền không chặn việc lưu sự kiện. Camera là hành động chính; thư viện ảnh là tùy chọn. Khi quyền bị từ chối, ứng dụng cho phép mở Settings hoặc tiếp tục mà không có ảnh/GPS.
 
-# OR using Yarn
-yarn ios
-```
+Từ chuyến đang hoạt động, mở **Bản đồ điểm GPS** và tải trước vùng 8 km quanh vị trí khi còn mạng. Sau khi trạng thái chuyển thành **Đã tải**, nền bản đồ hoạt động từ cache cục bộ; GPS chỉ cập nhật vị trí hiện tại.
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## Báo cáo
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+PDF được tạo hoàn toàn trên Android từ dữ liệu SQLite và ảnh cục bộ. Tên tệp có dạng `ForestLog_YYYY-MM-DD_TKxx_Kx_Lx.pdf`. Sau khi tạo, người dùng có thể mở PDF bằng trình đọc trên máy hoặc chia sẻ qua native share sheet.
 
-## Step 3: Modify your app
+## Kiểm tra offline
 
-Now that you have successfully run the app, let's make changes!
+1. Khi còn mạng, mở bản đồ từ chuyến đang hoạt động và tải vùng 8 km đến khi hiện **Đã tải**.
+2. Bật chế độ máy bay rồi tắt hẳn và mở lại ứng dụng.
+3. Kiểm tra nền bản đồ, điểm đã lưu và vị trí GPS vẫn hiển thị.
+4. Ghi nhiều sự kiện, chụp ảnh và lưu kể cả khi GPS không có.
+5. Tiếp tục chuyến đang làm, hoàn thành chuyến, kiểm tra lịch sử và tạo PDF.
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## Phạm vi MVP hiện tại
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+Đã có Home, tạo/khôi phục/hoàn thành chuyến, chọn Tiểu khu → Khoảnh → Lô, tạo/sửa/xóa sự kiện và phiếu quan trắc, nhiều ảnh, GPS tự động, bản đồ có vùng tải trước, lịch sử/chi tiết chỉ đọc, PDF cục bộ và native sharing.
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+## Giới hạn đã biết
 
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- Android là nền tảng đã được kiểm chứng; iOS chưa có module tạo/chia sẻ PDF tương đương.
+- Không theo dõi tuyến đường; quãng đường do người dùng nhập khi hoàn thành chuyến.
+- Không có đồng bộ, tài khoản, theo dõi tuyến đường, DOCX, chú thích ảnh hay sắp xếp lại ảnh.
+- Lịch sử chưa có tìm kiếm/bộ lọc nâng cao; bổ sung khi dữ liệu thực tế cho thấy cần thiết.
